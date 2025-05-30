@@ -21,6 +21,7 @@ class PhrasesViewModel: ObservableObject {
     
     init () {
         bindSearchText()
+//        loadFavoriteIDs()
     }
 
    func fetchPhrases() async {
@@ -29,6 +30,7 @@ class PhrasesViewModel: ObservableObject {
                let phrase = try await Manager.shared.fetchPhrases()
                phrases = phrase
                filteredPhrases = phrase
+               loadFavoriteIDs()
            } catch {
                print("Error fetching data: \(error.localizedDescription)")
            }
