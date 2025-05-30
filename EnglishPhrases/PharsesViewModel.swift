@@ -15,6 +15,8 @@ class PhrasesViewModel: ObservableObject {
     @Published var phrases: [Phrase] = []
     @Published var searchText: String = ""
     @Published var filteredPhrases: [Phrase] = []
+    @Published var favoriteIDs: Set<Int> = []
+    
     private var cancellables: Set<AnyCancellable> = []
     
     init () {
@@ -40,7 +42,8 @@ class PhrasesViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-                  func filterPhrases(with text: String) {
+    
+    func filterPhrases(with text: String) {
                 if text.isEmpty {
                     filteredPhrases = phrases
                 } else {
@@ -50,5 +53,27 @@ class PhrasesViewModel: ObservableObject {
                     }
                 }
             }
-         }
+    func toggleFavorite(for phrase: Phrase) {
+        if favoriteIDs.contains(phrase.id) {
+            favoriteIDs.remove(phrase.id)
+        } else {
+            favoriteIDs.insert(phrase.id)
+        }
+        saveFavoriteIDs()
+    }
+    
+    func saveFavoriteIDs() {
+        UserDefaults.standard.set(Array(favoriteIDs), forKey: "favoriteIDs")
+    }
+    
+    func isFavorite(_ phrase: Phrase) -> Bool {
+        favoriteIDs.contains(phrase.id)
+    }
+    
+    private func loadFavoriteIDs() {
+        if let savedIDs = UserDefaults.standard.array(forKey: "favoriteIDs") as? [Int] {
+            favoriteIDs = Set(savedIDs)
+        }
+    }
+}
 
